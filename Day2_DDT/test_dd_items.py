@@ -3,7 +3,6 @@ import pytest
 from playwright.sync_api import expect, Playwright, Page
 
 search_items = ["laptop", "Gift card", "smartphone", "camera"]
-search_items = ["laptop", "Gift card", "smartphone", "camera"]
 
 
 @pytest.mark.parametrize("item", search_items)
