@@ -1,0 +1,17 @@
+[
+    {
+        "email": "durgeshtesting@gmail.com",
+        "password": "durgeshtesting",
+        "validity": "valid"
+    },
+    {
+        "email": "invaliduser@example.com",
+        "password": "wrongpassword",
+        "validity": "invalid"
+    },
+    {
+        "email": "",
+        "password": "",
+        "validity": "invalid"
+    }
+]
