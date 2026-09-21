@@ -1,0 +1,5 @@
+email	password	validity
+durgeshtesting@gmail.com	durgeshtesting	valid
+invaliduser@example.com	wrongpassword	invalid
+invaliduser@example.com	wrongpasswords	invalid
+<null>	<null>	invalid

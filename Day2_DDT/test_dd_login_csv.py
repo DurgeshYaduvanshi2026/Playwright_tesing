@@ -1,17 +1,18 @@
 import pytest
 from playwright.sync_api import expect, Page
-import json
+import csv
 
-# Read Json file
-file = open("testdata/data.json", "r")
-login_data = json.load(file)
+login_csv_data = []  # empty list
+
+# Read CSV file
+csvfile = open("testdata/data.csv", newline="", encoding="utf-8")
+reader = csv.DictReader(csvfile, delimiter="\t")
+for row in reader:
+    login_csv_data.append((row["email"], row["password"], row["validity"]))
 
 
-@pytest.mark.parametrize(
-    "email, password,validity",
-    [(data["email"], data["password"], data["validity"]) for data in login_data],
-)
-def test_login_data_driven_json(email, password, validity, page: Page):
+@pytest.mark.parametrize("email, password,validity", login_csv_data)
+def test_login_data_driven_csv(email, password, validity, page: Page):
     page.goto("https://demowebshop.tricentis.com/")
 
     # Fill the login data
@@ -26,7 +27,9 @@ def test_login_data_driven_json(email, password, validity, page: Page):
         logout_link = page.locator("a[href='/logout']")
         expect(logout_link).to_be_visible(timeout=3000)
     else:
-        error_message = page.locator(".validation-summary-errors")
+        error_message = page.locator(
+            ".validation-summary-errors, .field-validation-error"
+        ).first
         expect(error_message).to_be_visible(timeout=5000)  # Checking error message
         expect(page).to_have_url(
             "https://demowebshop.tricentis.com/login"

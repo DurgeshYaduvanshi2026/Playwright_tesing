@@ -1,17 +1,26 @@
+"""
+openpyxl
+   pip install openpyxl
+
+"""
+
+import openpyxl
 import pytest
 from playwright.sync_api import expect, Page
-import json
 
-# Read Json file
-file = open("testdata/data.json", "r")
-login_data = json.load(file)
+login_data = []  # storing data in empty list
+workbook = openpyxl.load_workbook("testdata/data.xlsx")
+sheet = workbook.active  # or worksheet ["sheetname"]
+
+# reading data from xlsx using for loop
+for row in sheet.iter_rows(min_row=2, values_only=True):
+    email, password, validity = row
+    login_data.append((str(email or ""), str(password or ""), str(validity or "")))
+    workbook.close()
 
 
-@pytest.mark.parametrize(
-    "email, password,validity",
-    [(data["email"], data["password"], data["validity"]) for data in login_data],
-)
-def test_login_data_driven_json(email, password, validity, page: Page):
+@pytest.mark.parametrize("email, password, validity", login_data)
+def test_login_data_driven_excel_file(email, password, validity, page: Page):
     page.goto("https://demowebshop.tricentis.com/")
 
     # Fill the login data
@@ -26,7 +35,9 @@ def test_login_data_driven_json(email, password, validity, page: Page):
         logout_link = page.locator("a[href='/logout']")
         expect(logout_link).to_be_visible(timeout=3000)
     else:
-        error_message = page.locator(".validation-summary-errors")
+        error_message = page.locator(
+            ".validation-summary-errors, .field-validation-error"
+        ).first
         expect(error_message).to_be_visible(timeout=5000)  # Checking error message
         expect(page).to_have_url(
             "https://demowebshop.tricentis.com/login"
